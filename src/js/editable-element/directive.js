@@ -82,15 +82,6 @@ function($parse, $compile, editableThemes, $rootScope, $document, editableContro
         // merge overwrites to base editable controller
         angular.extend(eCtrl, overwrites);
 
-        // x-editable can be disabled using editableOption or edit-disabled attribute
-        var disabled = angular.isDefined(attrs.editDisabled) ?
-          scope.$eval(attrs.editDisabled) :
-          editableOptions.isDisabled;
-
-        if (disabled) {
-          return;
-        }
-
         // init editable ctrl
         eCtrl.init(!hasForm);
 
@@ -117,6 +108,14 @@ function($parse, $compile, editableThemes, $rootScope, $document, editableContro
           }
         // !hasForm
         } else {
+
+          //set disabled to default value
+          var disabled = editableOptions.isDisabled;
+
+          attrs.$observe('editDisabled', function(value){
+            disabled = value === 'true'; //attrs are strings
+          });
+
           // create editableform controller
           scope.$form = editableFormController();
           // add self to editable controller
@@ -131,11 +130,13 @@ function($parse, $compile, editableThemes, $rootScope, $document, editableContro
           if(!attrs.eForm || attrs.eClickable) {
             elem.addClass('editable-click');
             elem.bind(editableOptions.activationEvent, function(e) {
-              e.preventDefault();
-              e.editable = eCtrl;
-              scope.$apply(function(){
-                scope.$form.$show();
-              });
+              if(!disabled){
+                e.preventDefault();
+                e.editable = eCtrl;
+                scope.$apply(function(){
+                  scope.$form.$show();
+                });
+              }
             });
           }
         }
