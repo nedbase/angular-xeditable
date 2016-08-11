@@ -1291,7 +1291,7 @@ $scope.$watch("user", function(v) { $scope.$parent.debug["edit-disabled"]=v; });
   </div>
 </div></div>
                       <pre>{{ debug["editable-popover"] | json }}</pre>
-                      <p><p>To made an editable field display in a popover, wrap the editable in <code>&lt;div class=&quot;item-wrapper&quot;&gt;</code>.</p>
+                      <p><p>To made an editable field display in a popover, wrap the editable in <code>&lt;div class=&quot;popover-wrapper&quot;&gt;</code>.</p>
 </p>
                       <!--script(src=dir+'/controller.js')-->
                       <script>app.controller('EditPopoverCtrl', function($scope) {
@@ -2563,7 +2563,7 @@ If set to <code>no</code> control automatically submitted when value changed.<br
                         <tr>
                           <td><code>e-*</code></td>
                           <td>any</td>
-                          <td><p>Attributes defined with <code>e-*</code> prefix automatically transfered from original element to
+                          <td><p>Attributes defined with <code>e-*</code> prefix automatically transferred from original element to
 control.<br>For example, if you set <code>&lt;span editable-text=&quot;user.name&quot; e-style=&quot;width: 100px&quot;</code>&gt;
 then input will appear as <code>&lt;input style=&quot;width: 100px&quot;&gt;</code>.<br>See <a href="#text-customize">demo</a>.</p>
 </td>

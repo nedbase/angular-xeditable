@@ -1,7 +1,7 @@
 /*!
 angular-xeditable - 0.2.0
 Edit-in-place for angular.js
-Build date: 2016-06-28 
+Build date: 2016-08-11 
 */
 /**
  * Angular-xeditable module 
@@ -120,6 +120,11 @@ angular.module('xeditable').directive('editableBsdate', ['editableDirectiveFacto
                     this.inputEl.removeAttr('ng-change');
                 }
 
+                if (this.attrs.eStyle) {
+                    inputDatePicker.attr('style', this.attrs.eStyle);
+                    this.inputEl.removeAttr('style');
+                }
+
                 this.scope.dateOptions = {
                     formatDay:  this.attrs.eFormatDay || 'dd',
                     formatMonth: this.attrs.eFormatMonth || 'MMMM',
@@ -213,7 +218,7 @@ angular.module('xeditable').directive('editableCheckbox', ['editableDirectiveFac
         this.parent.render.call(this);
         if(this.attrs.eTitle) {
           this.inputEl.wrap('<label></label>');
-          this.inputEl.parent().append(this.attrs.eTitle);
+          this.inputEl.parent().append('<span>' + this.attrs.eTitle + '</span>');
         }
       },
       autosubmit: function() {
@@ -529,7 +534,7 @@ angular.module('xeditable').factory('editableController',
     self.single = null;
 
     /**
-     * Attributes defined with `e-*` prefix automatically transfered from original element to
+     * Attributes defined with `e-*` prefix automatically transferred from original element to
      * control.  
      * For example, if you set `<span editable-text="user.name" e-style="width: 100px"`>
      * then input will appear as `<input style="width: 100px">`.  
@@ -556,7 +561,7 @@ angular.module('xeditable').factory('editableController',
      * @var {string|attribute} blur
      * @memberOf editable-element
      */     
-    // no real `blur` property as it is transfered to editable form
+    // no real `blur` property as it is transferred to editable form
 
     //init
     self.init = function(single) {
@@ -794,15 +799,6 @@ angular.module('xeditable').factory('editableController',
       self.controlsEl.remove();
       self.editorEl.remove();
       $element.removeClass('editable-hide');
-
-      // Manually remove the watcher on 'has-error' to prevent a memory leak on it.
-      for (var i = 0, len = $scope.$$watchers.length; i < len; i++) {
-        if ($scope.$$watchers[i] !== undefined && $scope.$$watchers[i].last && $scope.$$watchers[i].last !== undefined &&
-            typeof $scope.$$watchers[i].last === 'object' && "has-error" in $scope.$$watchers[i].last) {
-          $scope.$$watchers.splice(i, 1);
-          break;
-        }
-      }
 
       // onhide
       return self.onhide();
@@ -1048,15 +1044,6 @@ function($parse, $compile, editableThemes, $rootScope, $document, editableContro
         // merge overwrites to base editable controller
         angular.extend(eCtrl, overwrites);
 
-        // x-editable can be disabled using editableOption or edit-disabled attribute
-        var disabled = angular.isDefined(attrs.editDisabled) ?
-          scope.$eval(attrs.editDisabled) :
-          editableOptions.isDisabled;
-
-        if (disabled) {
-          return;
-        }
-
         // init editable ctrl
         eCtrl.init(!hasForm);
 
@@ -1083,6 +1070,21 @@ function($parse, $compile, editableThemes, $rootScope, $document, editableContro
           }
         // !hasForm
         } else {
+
+          //set disabled to default value
+          var disabled = editableOptions.isDisabled;
+
+          attrs.$observe('editDisabled', function(value){
+            disabled = value === 'true'; //attrs are strings
+
+            if(disabled){
+                elem.removeClass('editable editable-click');
+            } else {
+                elem.addClass('editable editable-click');
+            }
+
+          });
+
           // create editableform controller
           scope.$form = editableFormController();
           // add self to editable controller
@@ -1095,13 +1097,15 @@ function($parse, $compile, editableThemes, $rootScope, $document, editableContro
 
           // bind click - if no external form defined
           if(!attrs.eForm || attrs.eClickable) {
-            elem.addClass('editable-click');
+            //elem.addClass('editable-click');
             elem.bind(editableOptions.activationEvent, function(e) {
-              e.preventDefault();
-              e.editable = eCtrl;
-              scope.$apply(function(){
-                scope.$form.$show();
-              });
+              if(!disabled){
+                e.preventDefault();
+                e.editable = eCtrl;
+                scope.$apply(function(){
+                  scope.$form.$show();
+                });
+              }
             });
           }
         }
