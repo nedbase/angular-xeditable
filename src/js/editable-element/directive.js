@@ -114,6 +114,13 @@ function($parse, $compile, editableThemes, $rootScope, $document, editableContro
 
           attrs.$observe('editDisabled', function(value){
             disabled = value === 'true'; //attrs are strings
+
+            if(disabled){
+                elem.removeClass('editable editable-click');
+            } else {
+                elem.addClass('editable editable-click');
+            }
+
           });
 
           // create editableform controller
@@ -128,7 +135,7 @@ function($parse, $compile, editableThemes, $rootScope, $document, editableContro
 
           // bind click - if no external form defined
           if(!attrs.eForm || attrs.eClickable) {
-            elem.addClass('editable-click');
+            //elem.addClass('editable-click');
             elem.bind(editableOptions.activationEvent, function(e) {
               if(!disabled){
                 e.preventDefault();
